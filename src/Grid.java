@@ -25,7 +25,6 @@ public class Grid {
 
         if(column > grid[0].length) throw new IllegalArgumentException("Invalid column value.");
 
-        Token t = new Token(p.getTokenColor(), p.getANSIStringColor());
 
         int l = this.grid.length - 1; // Ligne la + basse
         int c = column - 1;
@@ -37,6 +36,7 @@ public class Grid {
             }   --l;
         }
 
+        Token t = new Token(p.getTokenColor(), p.getANSIStringColor(), l, c);
         // SI la grille n'est pas pleine, on place le jeton.
         if(!isFull){ 
             this.grid[l][c] = t;
@@ -52,7 +52,7 @@ public class Grid {
             referDownRightNeighbor(c, l, t);
             referDownLeftNeighbor(c, l, t);
 
-            t.printNeighbors1();
+            //t.printNeighbors1();
             if( t.check() ){
                 System.out.println(p.getName() + " - WIN ");
                 this.printGrid();
@@ -222,39 +222,46 @@ public class Grid {
                     line = fw.readLine().replace("\u0000", ""); 
                     line_sep = line.split(" ");
                     line_sep_list = Arrays.asList(line_sep);
-
                     it = line_sep_list.iterator();
 
                     int l = Integer.parseInt(it.next().trim());
                     int c = Integer.parseInt(it.next().trim());
 
-                    Token t = new Token(COLOR.valueOf(it.next()));
+                    Token t = new Token(COLOR.valueOf(it.next()), l, c);
  
                     while(it.hasNext()){
                         COLOR C = COLOR.valueOf(it.next()); 
-                        DIRECTION D = DIRECTION.valueOf(it.next()); 
-                        Token tok_nbhood = new Token(C);          
+                        DIRECTION D = DIRECTION.valueOf(it.next());           
                         if(D.equals(DIRECTION.LEFT)){
+                            Token tok_nbhood = new Token(C, l, c - 1);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.RIGHT, loaded_grid, l, c, 0, -1);
                         }else if(D.equals(DIRECTION.RIGHT)){
+                            Token tok_nbhood = new Token(C, l, c + 1);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.LEFT, loaded_grid, l, c, 0, 1);
                         }else if(D.equals(DIRECTION.UP)){
+                            Token tok_nbhood = new Token(C, l - 1, c);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.DOWN, loaded_grid, l, c, -1, 0);
                         }else if(D.equals(DIRECTION.DOWN)){
+                            Token tok_nbhood = new Token(C, l + 1, c);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.UP, loaded_grid, l, c, 1, 0);
                         }else if(D.equals(DIRECTION.UP_RIGHT)){
+                            Token tok_nbhood = new Token(C, l - 1, c + 1);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.DOWN_LEFT, loaded_grid, l, c, -1, 1);
                         }else if(D.equals(DIRECTION.UP_LEFT)){
+                            Token tok_nbhood = new Token(C, l - 1, c - 1);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.DOWN_RIGHT, loaded_grid, l, c, -1, -1);
                         }else if(D.equals(DIRECTION.DOWN_RIGHT)){
+                            Token tok_nbhood = new Token(C, l + 1, c + 1);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.UP_LEFT, loaded_grid, l, c, 1, 1);
                         }else if(D.equals(DIRECTION.DOWN_LEFT)){
+                            Token tok_nbhood = new Token(C, l + 1, c - 1);
                             loadNeighbors(t, tok_nbhood, D, DIRECTION.UP_RIGHT, loaded_grid, l, c, 1, -1);
                         }
-                    }       
-                }   fw.close(); 
+                    }    
+                }  
+                    fw.close(); 
                     this.grid = loaded_grid.grid;
-                    this.printNeighborsGrid();
+                    //this.printNeighborsGrid();
             }
         }catch(IOException ioe){
             System.err.println("IOException: " + ioe.getMessage());
@@ -269,7 +276,7 @@ public class Grid {
             tok_nbhood.setNeighbors(D_nbhood, loaded_grid.grid[l][c]);
         }else{
             t.setNeighbors(D, loaded_grid.grid[l + offx][c + offy]);
-            loaded_grid.grid[l + offx][c + offy].setNeighbors(D_nbhood, loaded_grid.grid[l][c]);
+            loaded_grid.grid[l + offx][c + offy].setNeighbors(D_nbhood, t);
         }
 
     }  
@@ -289,15 +296,21 @@ public class Grid {
         public static final String CROSS = "X";
 
         private COLOR color;
+        int l;
+        int c;
 
         private EnumMap<DIRECTION, Token> neighbors = new EnumMap<>(DIRECTION.class);
     
-        public Token(COLOR C, String ANSIcolor){
+        public Token(COLOR C, String ANSIcolor, int l, int c){
             this.color = C;
+            this.l = l;
+            this.c = c;
         }
 
-        public Token(COLOR C){
+        public Token(COLOR C, int l, int c){
             this.color = C;
+            this.l = l;
+            this.c = c;
         }
 
         public void setNeighbors(DIRECTION D, Token T){
@@ -338,8 +351,8 @@ public class Grid {
         }   
         
         public int isAlign(Token t, DIRECTION d, int nb){
+            System.out.println(d + " " + nb + " " + t.l + " " + t.c);
             t.printNeighbors1();
-            System.out.println(d + " " + nb);
             if( t.neighbors.containsKey(d) ){
                 if(t.neighbors.get(d) != null && t.getColor().equals(t.neighbors.get(d).getColor())){
                     return isAlign(t.neighbors.get(d), d, nb + 1);

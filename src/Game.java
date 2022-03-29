@@ -63,7 +63,6 @@ public class Game {
         boolean isTurnJ1 = true;
         boolean saveload = true;
 
-
         Grid gameGrid = new Grid();
         File f = new File(SAVE_FILE);
         if(f.exists()){
