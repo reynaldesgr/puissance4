@@ -5,8 +5,11 @@ public class Grid {
     public static final int MAX_COLUMN = 7;
     public static final int MAX_LINE   = 6;
 
-    public static int last_token_pos_l = 0;
-    public static int last_token_pos_c = 0;
+    public static int last_token_pos_l = 0; // Dernière position de la colonne du token joué
+    public static int last_token_pos_c = 0; // Dernière position de la ligne du token joué
+
+    /* Ligne la plus haute contenant des jetons */
+    /* Initialement 6 car aucune (grille vide) */
     public static int last_line_play =   6;
 
     public static final Token EMPTY = null;

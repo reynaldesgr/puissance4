@@ -5,8 +5,6 @@ import java.util.Random;
 import src.Grid.DIRECTION;
 
 class IA extends Player{
-    //private List<Integer> game_state = new ArrayList<>();
-
     public IA(){ super("IA"); }
 
     public void chooseTokenColor(Player J){
