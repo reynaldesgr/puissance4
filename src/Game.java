@@ -25,13 +25,23 @@ public class Game {
         try (Scanner input = new Scanner(System.in)) {
             Player J1;
             Player J2;
+            boolean isThereIA = false;
+            
+            System.out.println(ANSI_CYAN + "Choississez votre mode de jeu." + ANSI_WHITE);
+            System.out.println("Joueur vs. Joueur : 1 | Joueur vs. IA : 2");
+            
+            isThereIA = System.console().readLine().equals("2") ? true : false;
 
-            System.out.println(" J1 - Enter your name: ");
-            J1 = new Human(input.nextLine());
-
-            //System.out.println(" J2 - Entrez your name: ");
-            J2 = new IA();
-
+            if(!isThereIA){
+                System.out.println(" J1 - Enter your name: ");
+                J1 = new Human(input.nextLine());
+                System.out.println(" J2 - Entrez your name: ");
+                J2 = new Human(input.nextLine()); 
+            }else{
+                System.out.println(" J1 - Enter your name: ");
+                J1 = new Human(input.nextLine());
+                J2 = new IA(); 
+            }
             playGame(J1, J2);
         }
     }
