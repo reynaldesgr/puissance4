@@ -70,13 +70,13 @@ class IA extends Player{
                         if(score[5] < down_left)  score[5] = down_left;
 
                         if(left + right >= best_token_score && c != 0 && c != Grid.MAX_COLUMN - 1){
-                            best_token_score = left + right + down + down_right + down_left;
+                            best_token_score = left + right;
                             pos_l = l; pos_c = c;
                         }else if( down + up >= best_token_score && l != 0){
-                            best_token_score = left + right + down + down_right + down_left;
+                            best_token_score = up + down;
                             pos_l = l; pos_c = c;
                         }else if(down_right + down_left >= best_token_score && c != Grid.MAX_COLUMN - 1 && l != 0 && c!= 0){
-                            best_token_score = left + right + down + down_right + down_left;
+                            best_token_score = down_right + down_left;
                             pos_l = l; pos_c = c;
                         }
                     }
