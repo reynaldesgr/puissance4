@@ -56,14 +56,18 @@ public class Game {
     public static void playGame(Player J1, Player J2){
         boolean isGameFinished = false;
         boolean saveload = false;
+        String resp_load = "";
         current_player = J1;
         Grid gameGrid = new Grid();
         File f = new File(SAVE_FILE);
         System.console().flush();
         if(f.exists()){
             if(f.length() != 0){
-                System.out.println("Une sauvegarde existe. Voulez-vous la charger ? (O: oui / N: non)");
-                saveload = System.console().readLine().equals("O") ?  true : false; 
+                while(!resp_load.equals("O") && !resp_load.equals("N")){
+                    System.out.println("Une sauvegarde existe. Voulez-vous la charger ? (O: oui / N: non)");
+                    resp_load = System.console().readLine();
+                }
+                saveload = resp_load.equals("O") ? true : false;
             }
             if(saveload){
                 System.out.println(" --- Chargement de la sauvegarde ... ---");
