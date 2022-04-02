@@ -53,7 +53,8 @@ public class FileGridSaver {
                     int c = Integer.parseInt(it.next().trim());
 
                     Token t = new Token(COLOR.valueOf(it.next()));
- 
+                    if(loaded_grid.getGrid()[l][c] == null){ loaded_grid.getGrid()[l][c] = t;}
+                    System.out.println(line_sep_list);
                     while(it.hasNext()){
                         COLOR C = COLOR.valueOf(it.next()); 
                         DIRECTION D = DIRECTION.valueOf(it.next());   
@@ -77,8 +78,8 @@ public class FileGridSaver {
                         }
                     }    
                 }  
-                    grid = loaded_grid;
-                    fw.close(); 
+                grid = loaded_grid;
+                fw.close(); 
             }
         }catch(IOException ioe){
             System.err.println("IOException: " + ioe.getMessage());

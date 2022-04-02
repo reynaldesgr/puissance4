@@ -14,11 +14,7 @@ public class Token {
     le référencement vers les voisins du jeton de l'instance courante 
     + la direction de ses voisins dans la grille par rapport à la position de ce jeton*/
     private EnumMap<DIRECTION, Token> neighbors = new EnumMap<>(DIRECTION.class); 
-
-    public Token(COLOR C, String ANSIcolor){
-        this.color = C;
-    }
-
+    
     public Token(COLOR C){
         this.color = C;
     }
@@ -26,6 +22,10 @@ public class Token {
     /* Setter : rajoute un voisin au Token T dans la direction D) */
     public void setNeighbors(DIRECTION d, Token t){
         this.neighbors.put(d, t);
+    }
+
+    public void setNeighbors(EnumMap<DIRECTION, Token> map){
+        this.neighbors = map;
     }
 
     public EnumMap<DIRECTION, Token> getNeighbors(){

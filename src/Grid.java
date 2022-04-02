@@ -8,16 +8,25 @@ public class Grid {
     public static int last_token_pos_l = 0; // Dernière position de la colonne du token joué
     public static int last_token_pos_c = 0; // Dernière position de la ligne du token joué
 
-    /* Ligne la plus haute contenant des jetons */
-    /* Initialement 6 car aucune (grille vide) */
-    public static int last_line_play =   6;
-
     public static final Token EMPTY = null;
-    private FileGridSaver fSaver = new FileGridSaver();
+    private static FileGridSaver fSaver = new FileGridSaver();
 
-    private Token[][] grid = new Token[MAX_LINE][MAX_COLUMN];
-    public enum DIRECTION{ LEFT, RIGHT, DOWN, UP, DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT}
+    private Token[][] grid;
+    public static enum DIRECTION{ LEFT, RIGHT, DOWN, UP, DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT}
 
+    public Grid(){ this.grid = new Token[MAX_LINE][MAX_COLUMN];}
+    public void getCopy(Grid grid){
+        Token t;
+        for(int l = 0; l < Grid.MAX_LINE; l++){
+            for(int c = 0; c < Grid.MAX_COLUMN; c++){
+                t = grid.getGrid()[l][c];
+                if(t != EMPTY){
+                    this.grid[l][c] =  new Token(t.getColor());
+                    this.grid[l][c].setNeighbors(t.getNeighbors().clone());
+                }
+            }
+        }
+    }
     /* Retourne la grille du jeu */
     public Token[][] getGrid(){ return this.grid.clone(); } 
 
@@ -35,8 +44,8 @@ public class Grid {
     /* -> Placer correctement le jeton joué par le joueur dans la grille */
     /*    (ligne la + basse disponible avec sa colonne correspondante) */
     /* -> Initialiser les voisins du jeton placé en fonction de sa position dans la grille */
-    public boolean placeToken(Player p, int column) throws IllegalArgumentException{
-        if(column > grid[0].length) throw new IllegalArgumentException("Invalid column value.");
+    public boolean placeToken(Player p, int column, boolean simul) throws IllegalArgumentException{
+        if(column > grid[0].length || column < 0) throw new IllegalArgumentException("Invalid column value.");
 
         int l = this.grid.length - 1; 
         int c = column - 1;
@@ -48,29 +57,42 @@ public class Grid {
             }   --l;
         }
         
-        Token t = new Token(p.getTokenColor(), p.getANSIStringColor());
+        Token t = new Token(p.getTokenColor());
 
         /* Référencement des voisins du jeton placé si la ligne où le jeton est placé n'est pas pleine. */
-        if(!isLineFull){ 
-            if(last_line_play > l){
-                last_line_play = l;
-            }
-
+        if(!isLineFull){
+            
             this.grid[l][c] = t;
             last_token_pos_c = c; 
             last_token_pos_l = l;
-            if(c != 0)                            referDirectionNeighbor(l, c, 0, -1, DIRECTION.LEFT,  DIRECTION.RIGHT, t); 
-            if(c != MAX_COLUMN - 1)               referDirectionNeighbor(l, c, 0, 1,  DIRECTION.RIGHT, DIRECTION.LEFT,  t);
-            if(l != 0)                            referDirectionNeighbor(l, c, -1, 0, DIRECTION.UP,    DIRECTION.DOWN,  t);
-            if(l != MAX_LINE - 1)                 referDirectionNeighbor(l, c, 1, 0,  DIRECTION.DOWN,  DIRECTION.UP,    t);
+            if(c != 0){
+                referDirectionNeighbor(l, c, 0, -1, DIRECTION.LEFT,  DIRECTION.RIGHT, t); 
+            }
+            if(c != MAX_COLUMN - 1){
+                referDirectionNeighbor(l, c, 0, 1,  DIRECTION.RIGHT, DIRECTION.LEFT, t);
+            }
+            if(l != 0){
+                referDirectionNeighbor(l, c, -1, 0, DIRECTION.UP,    DIRECTION.DOWN, t);
+            }
+            if(l != MAX_LINE - 1){
+                referDirectionNeighbor(l, c, 1, 0,  DIRECTION.DOWN,  DIRECTION.UP, t);
+            }
             
-            if(l != 0 && c != MAX_COLUMN -1)              referDirectionNeighbor(l, c, -1, 1, DIRECTION.UP_RIGHT,   DIRECTION.DOWN_LEFT,  t);
-            if(l != 0 && c != 0)                          referDirectionNeighbor(l, c, -1, -1,DIRECTION.UP_LEFT,    DIRECTION.DOWN_RIGHT, t);
-            if(l != MAX_LINE -1 && c != 0)                referDirectionNeighbor(l, c, 1, -1, DIRECTION.DOWN_LEFT,  DIRECTION.UP_RIGHT,   t);
-            if(l != MAX_LINE - 1 && c != MAX_COLUMN - 1)  referDirectionNeighbor(l, c, 1, 1, DIRECTION.DOWN_RIGHT, DIRECTION.UP_LEFT,    t);
+            if(l != 0 && c != MAX_COLUMN -1){
+                referDirectionNeighbor(l, c, -1, 1, DIRECTION.UP_RIGHT,  DIRECTION.DOWN_LEFT,  t);
+            }
+            if(l != 0 && c != 0){
+                referDirectionNeighbor(l, c, -1, -1,DIRECTION.UP_LEFT,   DIRECTION.DOWN_RIGHT, t);
+            }
+            if(l != MAX_LINE -1 && c != 0){
+                referDirectionNeighbor(l, c, 1, -1, DIRECTION.DOWN_LEFT, DIRECTION.UP_RIGHT, t);
+            }
+            if(l != MAX_LINE - 1 && c != MAX_COLUMN - 1){
+                referDirectionNeighbor(l, c, 1, 1,  DIRECTION.DOWN_RIGHT,DIRECTION.UP_LEFT, t);
+            }
 
             /* Si le jeton joué satisfait un alignement de + de 4 jetons, la partie se termine. */
-            if( t.check() ){
+            if( t.check() && !simul){
                 System.out.println( Game.ANSI_YELLOW + "!! " + p.getName() + " - WIN " + " !!" + Game.ANSI_WHITE);
                 this.printGrid();
                 fSaver.unload(Game.SAVE_FILE);
@@ -82,7 +104,7 @@ public class Grid {
             fSaver.unload(Game.SAVE_FILE);
             System.exit(0);
         }else{
-            System.out.println( Game.ANSI_BLUE + "Ligne pleine." + Game.ANSI_WHITE);
+            throw new IllegalArgumentException("Ligne pleine.");
         }
         return false;
     }
@@ -99,12 +121,23 @@ public class Grid {
         }
     }
 
+    /* Vérification permettant de savoir si la grille est pleine. */
     public boolean isLineFullGrid(){
         for(int c = 0; c < MAX_COLUMN; c++){
             if(this.grid[0][c] != null){
                 return false;
             }
         } return true;
+    }
+
+    /* Vérification permettant de savoir si une colonne est pleine. */
+    public boolean isColumnFull(int column){
+        for(int l = 0; l < MAX_LINE; l++){
+            if(grid[l][column] == EMPTY){
+                return false;
+            }
+        }
+        return true;
     }
 
     /* Affichage de la grille en jeu */
@@ -143,4 +176,25 @@ public class Grid {
         }
         return strGrid;
     }
+    
+    public boolean checkAlignementGridToken(int length, Player.COLOR color){
+        int align_length;
+        for(int l = 0; l < Grid.MAX_LINE; l++){
+            for(int c = 0; c < Grid.MAX_COLUMN; c++){
+                Token t = grid[l][c];
+                if( t!= null && t.getColor().equals(color)){
+                    align_length = t.isAlign(t, DIRECTION.RIGHT, 0) + t.isAlign(t, DIRECTION.LEFT, 0);
+                    if(align_length >= length){ return true; }
+                    align_length = t.isAlign(t, DIRECTION.UP, 0) + t.isAlign(t, DIRECTION.DOWN, 0);
+                    if(align_length >= length){ return true; }
+                    align_length = t.isAlign(t, DIRECTION.UP_LEFT, 0) + t.isAlign(t, DIRECTION.DOWN_RIGHT, 0);
+                    if(align_length >= length){ return true; }
+                    align_length = t.isAlign(t, DIRECTION.UP_RIGHT, 0) + t.isAlign(t, DIRECTION.DOWN_LEFT, 0);
+                    if(align_length >= length){ return true; }
+                }
+            }
+        }
+        return false;
+    }
+
 }

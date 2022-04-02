@@ -108,7 +108,7 @@ class Human extends Player{
                         System.out.println("\nWARNING : Enter an existing value.");
                         continue;
                     }
-                    gameGrid.placeToken(this, column);
+                    gameGrid.placeToken(this, column, false);
                     correctInput = true;
                 }catch (IllegalArgumentException ex){
                     System.out.println(ex.getMessage());

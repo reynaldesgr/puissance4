@@ -19,12 +19,18 @@ public class Game {
     /** Default path to save the current game grid **/
     public static final String SAVE_FILE = "./save/savefile.txt";
 
+    public static Player J1;
+    public static Player J2;
+    public static Player current_player;
+
+    public static Player nextPlayer(){
+        return current_player == J1 ? J1 : J2;
+    }
+
     /* Initialiser les joueurs J1 & J2 */
     public static void initPlayer(){
         System.out.println(ANSI_PURPLE + " === Bienvenue ! === " + ANSI_WHITE + "\n");
         try (Scanner input = new Scanner(System.in)) {
-            Player J1;
-            Player J2;
             boolean isThereIA = false;
             
             System.out.println(ANSI_CYAN + "Choississez votre mode de jeu." + ANSI_WHITE);
@@ -49,9 +55,8 @@ public class Game {
     /* Joue le jeu jusqu'à une victoire ou une défaite (au tour par tour: J1 puis J2) */
     public static void playGame(Player J1, Player J2){
         boolean isGameFinished = false;
-        boolean isTurnJ1 = true;
         boolean saveload = false;
-
+        current_player = J1;
         Grid gameGrid = new Grid();
         File f = new File(SAVE_FILE);
         System.console().flush();
@@ -71,17 +76,28 @@ public class Game {
         
         while(!isGameFinished){
             gameGrid.printGrid();
-            if(isTurnJ1){
-                isTurnJ1 = !isTurnJ1;
-                J1.placeTokenOnGrid(gameGrid);
+            if(current_player == J1){
+                current_player = J2;
+                try{
+                    J1.placeTokenOnGrid(gameGrid);
+                }catch(IllegalArgumentException ex){
+                    System.out.println(ex.getMessage());
+                    current_player = J1;
+                    continue;
+                }
             }else{ 
-                isTurnJ1 = !isTurnJ1;
-                J2.placeTokenOnGrid(gameGrid);
+                current_player = J1;
+                try{
+                    J2.placeTokenOnGrid(gameGrid);
+                }catch(IllegalArgumentException ex){
+                    System.out.println(ex.getMessage());
+                    current_player = J2;
+                    continue;
+                }
             } 
             gameGrid.saveGrid(SAVE_FILE, J1, J2);
         }  
     }
-
     public static void main(String args[]){
         System.out.println(" === PUISSANCE 4 === ");
         initPlayer();
