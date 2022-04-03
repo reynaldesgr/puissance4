@@ -45,7 +45,7 @@ public class AlphaBetaIA {
     
     /** ALGORITHME ALPHA-BETA **/
 
-    /* Consiste à minimiser la perte maximum. L'élègage alpha-beta accèle la routine */
+    /* Consiste à minimiser la perte maximum. L'élègage alpha-beta accelère la routine */
     /* de recherche minimax en éliminant les cas qui ne seront pas utilisés. */
     /* Elle s'appuie sur le fait que tous les autres niveaux de l'arbre seront maximisés et */
     /* que tous les autres niveaux seront minimisés. */
