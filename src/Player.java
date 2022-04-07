@@ -76,18 +76,21 @@ class Human extends Player{
                 System.out.print(Game.ANSI_PURPLE +  "> PURPLE"  + Game.ANSI_WHITE + ": 5" + "\n");
             }
 
-            System.out.println("\n" + this.name +  " - Choose your color :");
+            System.out.println("\n" + this.name +  " - Choisissez votre couleur :");
             
             try{
                 numberColorChoose = Integer.parseInt(System.console().readLine());
-                if(numberColorChoose >= 1 && numberColorChoose <= 5){ 
+                if(numberColorChoose == numberColorPlayer){
+                    System.out.println("Choisissez une autre couleur.");
+                }
+                else if(numberColorChoose >= 1 && numberColorChoose <= 5){ 
                     correctInput = true; 
                 }else{  
-                    System.out.println("Enter an correct value (between 1 and 5)"); 
+                    System.out.println("Entrez une valeur correcte (entre 1 et 5)"); 
                     continue;
                 }
             }catch (Exception e){
-                System.out.println("\nWARNING : Enter an existing value.");
+                System.out.println("\nATTENTION : Entrez une valeur existante.");
                 continue;
             }
         }   this.setANSIColor(numberColorChoose - 1); 
@@ -101,7 +104,7 @@ class Human extends Player{
         boolean correctInput = false;        
         while(!correctInput)
         {
-            System.out.print("\n" + this.getANSIStringColor() + this.name + Game.ANSI_WHITE + " - play (choose your column): ");
+            System.out.print("\n" + this.getANSIStringColor() + this.name + Game.ANSI_WHITE + " - play (choisissez une colonne): ");
             try
             {
                 try
@@ -110,7 +113,7 @@ class Human extends Player{
                 }
                 catch (Exception e)
                 {
-                    System.out.println("\nWARNING : Enter an existing value.");
+                    System.out.println("\nATTENTION : Entrez une valeur existante.");
                     continue;
                 }
                 gameGrid.placeToken(this, column, false);

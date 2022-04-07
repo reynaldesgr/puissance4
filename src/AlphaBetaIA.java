@@ -111,7 +111,7 @@ public class AlphaBetaIA
     /* Procédure permettant d'afficher l'action choisi dans la console */
     private void printAction(int action)
     {
-        System.out.println("\n" + Game.ANSI_RED + "IA joue en : " + Game.ANSI_WHITE + action);
+        System.out.println("\n" + Game.ANSI_RED + "IA joue en : " + Game.ANSI_WHITE + action + "\n");
     }
 }
 

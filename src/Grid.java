@@ -117,7 +117,7 @@ public class Grid {
             /* Si le jeton joué satisfait un alignement de + de 4 jetons, la partie se termine. */
             if( t.check() && !simul)
             {
-                System.out.println( "\n" + Game.ANSI_YELLOW + "!! " + p.getName() + " - WIN" + " !!" + Game.ANSI_WHITE);
+                System.out.println( "\n" + Game.ANSI_YELLOW + "\n!! " + p.getName() + " - WIN" + " !!\n" + Game.ANSI_WHITE);
                 this.printGrid();
                 fSaver.unload(Game.SAVE_FILE);
                 System.exit(0);

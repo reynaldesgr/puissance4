@@ -49,9 +49,9 @@ public class Game
 
             if(!isThereIA)
             {
-                System.out.println(" J1 - Enter your name: ");
+                System.out.println(" J1 - Entrez votre nom: ");
                 J1 = new Human(input.nextLine());
-                System.out.println(" J2 - Entrez your name: ");
+                System.out.println(" J2 - Entrez votre nom: ");
                 J2 = new Human(input.nextLine()); 
             }
             else
