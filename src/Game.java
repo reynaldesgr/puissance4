@@ -56,7 +56,7 @@ public class Game
             }
             else
             {
-                System.out.println(" J1 - Enter your name: ");
+                System.out.println(" J1 - Entrez votre nom: ");
                 J1 = new Human(input.nextLine());
                 J2 = new IA(); 
             }
